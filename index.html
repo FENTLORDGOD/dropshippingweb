@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PrismCart — Dropshipping Blueprint</title>
+  <meta name="description" content="A light, conversion-first dropshipping blueprint with gradient-mesh parallax, product grid, and polished UX.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode:'class',
+      theme:{ extend:{
+        fontFamily:{ inter:['Inter','ui-sans-serif','system-ui','sans-serif'], display:['Plus Jakarta Sans','Inter','ui-sans-serif'] },
+        colors:{ base:'#0b0f17' },
+        boxShadow:{ crisp:'0 2px 10px rgba(2,6,23,.06), 0 20px 50px rgba(2,6,23,.08)', glow:'0 0 0 3px rgba(99,102,241,.15), 0 10px 30px rgba(2,6,23,.16)' },
+        borderRadius:{ theme:'16px', xl2:'22px' }
+      }}
+    }
+  </script>
+  <style>
+    :root{ --primary:#6366f1; --primary2:#06b6d4; --radius:16px; --intensity:1.15; --lerp:.24; --grain:.04 }
+    html{ font-family:'Inter',system-ui,sans-serif; background:#f8fafc; color:#0b0f17 }
+    .display{ font-family:'Plus Jakarta Sans',system-ui,sans-serif; letter-spacing:-.01em }
+    .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.78rem 1.05rem; border-radius:12px; font-weight:700 }
+    .btn-grad{ color:white; background:linear-gradient(135deg, var(--primary), var(--primary2)); }
+    .btn-ghost{ background:#0b122008; border:1px solid #0b122012; color:#0b0f17 }
+    .pill{ display:inline-flex; align-items:center; gap:.5rem; padding:.45rem .75rem; border-radius:999px; font-weight:600; background:#0b12200a; border:1px solid #0b122012 }
+    .card{ border-radius:18px; background:white; border:1px solid rgba(2,6,23,.08); box-shadow: 0 1px 0 rgba(2,6,23,.06); }
+    .card:hover{ box-shadow: 0 2px 10px rgba(2,6,23,.06), 0 30px 60px rgba(2,6,23,.08); transform: translateY(-2px); transition:.25s ease }
+    header[data-hidden="true"]{ transform:translateY(-100%); opacity:0; pointer-events:none }
+    header{ transition:transform .24s ease, opacity .24s ease }
+    #top-hover-zone{ position:fixed; top:0; left:0; right:0; height:22px; z-index:70 }
+    /* Parallax */
+    #global-bg{ position:fixed; inset:0; z-index:-1; overflow:hidden }
+    .scene{ position:absolute; inset:-10%; perspective:1200px; transform-style:preserve-3d }
+    .layer{ position:absolute; inset:0; will-change:transform; pointer-events:none }
+    .mesh{ filter: blur(24px); opacity:.9; }
+    .blend{ mix-blend-mode:multiply; opacity:.35 }
+    .grain:before{ content:''; position:fixed; inset:-20%; pointer-events:none; z-index:0;
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1200\" height=\"1200\" viewBox=\"0 0 1200 1200\"><filter id=\"n\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"4\" stitchTiles=\"stitch\"/></filter><rect width=\"1200\" height=\"1200\" filter=\"url(%23n)\" opacity=\"0.22\"/></svg>');
+      mix-blend-mode:overlay; opacity:var(--grain) }
+    @media (prefers-reduced-motion: reduce){ .layer,.scene{ transform:none !important } }
+  </style>
+</head>
+<body class="scroll-smooth grain">
+  <!-- PARALLAX BACKGROUND (light gradient mesh + ribbons) -->
+  <div id="global-bg" aria-hidden="true">
+    <div class="scene" id="scene">
+      <canvas class="layer mesh" id="mesh" data-depth="0.06"></canvas>
+      <svg class="layer blend" data-depth="0.16" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" style="width:140%;height:140%;left:-20%;top:-20%">
+        <defs>
+          <linearGradient id="r" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#6366f1"/></linearGradient>
+        </defs>
+        <path d="M0,500 C300,420 500,620 800,520 C1000,460 1100,540 1200,500 L1200,800 L0,800Z" fill="url(#r)" opacity=".3">
+          <animate attributeName="d" dur="16s" repeatCount="indefinite"
+            values="M0,500 C300,420 500,620 800,520 C1000,460 1100,540 1200,500 L1200,800 L0,800Z;
+                    M0,520 C280,460 520,600 820,540 C980,500 1100,560 1200,520 L1200,800 L0,800Z;
+                    M0,500 C300,420 500,620 800,520 C1000,460 1100,540 1200,500 L1200,800 L0,800Z"/>
+        </path>
+      </svg>
+      <canvas class="layer" id="sparks" data-depth="0.12"></canvas>
+    </div>
+  </div>
+  <div id="top-hover-zone"></div>
+
+  <!-- HEADER (light, airy) -->
+  <header class="fixed top-0 inset-x-0 z-50" data-hidden="true">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mt-4 rounded-[14px] bg-white/90 backdrop-blur border border-slate-200 shadow-crisp">
+        <div class="flex items-center justify-between px-4 py-3">
+          <a href="#" class="flex items-center gap-2 font-bold tracking-tight"><span class="text-xl">✨</span><span>PrismCart</span></a>
+          <nav class="hidden md:flex items-center gap-8 text-sm font-semibold">
+            <a href="#products" class="hover:text-indigo-600">Products</a>
+            <a href="#benefits" class="hover:text-indigo-600">Why Us</a>
+            <a href="#faq" class="hover:text-indigo-600">FAQ</a>
+            <a href="#contact" class="hover:text-indigo-600">Contact</a>
+            <button id="open-settings" class="ml-2 rounded-lg px-3 py-2 btn-ghost">⚙︎ Settings</button>
+          </nav>
+          <a href="#products" class="md:hidden btn btn-grad">Shop</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO (light editorial) -->
+  <section id="hero" class="relative min-h-[86vh] flex items-center">
+    <div class="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <span class="pill">Dropshipping Blueprint</span>
+      <h1 class="display mt-6 text-5xl sm:text-7xl md:text-8xl font-extrabold leading-[0.95]">
+        Build a store that <span style="background:linear-gradient(135deg,var(--primary),var(--primary2));-webkit-background-clip:text;background-clip:text;color:transparent">converts</span> day one.
+      </h1>
+      <p class="mt-5 text-lg sm:text-xl text-slate-700 max-w-3xl">Clean, credible, and fast. A product-first layout with a living background.</p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a href="#products" class="btn btn-grad shadow-glow">Browse Products</a>
+        <a href="#benefits" class="btn btn-ghost">Why PrismCart</a>
+      </div>
+      <div class="mt-14 grid md:grid-cols-3 gap-4">
+        <div class="card p-5"><div class="text-sm font-semibold text-slate-600">Speed</div><div class="mt-1 font-bold">90+ Lighthouse</div></div>
+        <div class="card p-5"><div class="text-sm font-semibold text-slate-600">Trust</div><div class="mt-1 font-bold">Reviews & badges</div></div>
+        <div class="card p-5"><div class="text-sm font-semibold text-slate-600">CRO</div><div class="mt-1 font-bold">Sticky CTAs & email capture</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section id="benefits" class="py-14">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="card p-6"><h3 class="font-semibold text-lg">Credibility on arrival</h3><p class="text-slate-600 mt-2">Social proof, payment icons, and clear return policy blocks.</p></div>
+        <div class="card p-6"><h3 class="font-semibold text-lg">Snap-fast pages</h3><p class="text-slate-600 mt-2">Optimised assets, minimal JS, and accessible markup.</p></div>
+        <div class="card p-6"><h3 class="font-semibold text-lg">A/B ready sections</h3><p class="text-slate-600 mt-2">Headline, hero, badges and price tests ready to go.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORY STRIP -->
+  <section class="py-4">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="pill">All</span><span class="pill">Gadgets</span><span class="pill">Home</span><span class="pill">Fitness</span><span class="pill">Beauty</span><span class="pill">Pets</span><span class="pill">Travel</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS GRID (12 items) -->
+  <section id="products" class="py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex items-end justify-between">
+        <div><h2 class="display text-3xl font-extrabold">Trending Products</h2><p class="text-slate-600">Swap with your niche in minutes.</p></div>
+        <a href="#contact" class="hidden sm:inline-flex btn btn-grad">Get This Template</a>
+      </div>
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 card p-8">
+      <h3 class="display text-2xl font-bold mb-6">What sellers say</h3>
+      <div class="grid md:grid-cols-3 gap-6">
+        <blockquote class="rounded-lg p-5 bg-slate-50 border border-slate-200">“We launched in days and hit 4% conversion.”<div class="mt-3 text-sm text-slate-600">— Jordan</div></blockquote>
+        <blockquote class="rounded-lg p-5 bg-slate-50 border border-slate-200">“The layout screams trust. Sales followed.”<div class="mt-3 text-sm text-slate-600">— Keira</div></blockquote>
+        <blockquote class="rounded-lg p-5 bg-slate-50 border border-slate-200">“Mobile flow is frictionless.”<div class="mt-3 text-sm text-slate-600">— Ren</div></blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 card p-8">
+      <h3 class="display text-2xl font-bold mb-6">FAQ</h3>
+      <div class="space-y-4">
+        <details class="rounded-lg p-4 bg-white border border-slate-200"><summary class="cursor-pointer font-semibold">Is this Shopify-ready?</summary><p class="text-slate-600 mt-2">Yes — sections and product card markup port easily.</p></details>
+        <details class="rounded-lg p-4 bg-white border border-slate-200"><summary class="cursor-pointer font-semibold">Can I swap images quickly?</summary><p class="text-slate-600 mt-2">All images are standard <code>&lt;img&gt;</code> tags — replace URLs or your CDN.</p></details>
+        <details class="rounded-lg p-4 bg-white border border-slate-200"><summary class="cursor-pointer font-semibold">Do you do product research?</summary><p class="text-slate-600 mt-2">Yes — add‑on service. This is a conversion foundation.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 card p-8">
+      <div class="grid md:grid-cols-2 gap-6 items-start">
+        <div>
+          <h3 class="display text-2xl font-bold">Start dropshipping the right way</h3>
+          <p class="text-slate-600 mt-2">I’ll tailor this blueprint to your niche and products.</p>
+          <ul class="mt-4 space-y-2 text-sm text-slate-700">
+            <li>✅ Launch plan & tracking</li><li>✅ Product page optimization</li><li>✅ Trust markers & email capture</li>
+          </ul>
+        </div>
+        <form action="https://formspree.io/f/your-id" method="POST" class="rounded-xl bg-white border border-slate-200 p-6">
+          <div class="grid gap-3">
+            <input required name="name" placeholder="Your name" class="rounded-lg px-4 py-3 bg-slate-100 outline-none">
+            <input required type="email" name="email" placeholder="Email" class="rounded-lg px-4 py-3 bg-slate-100 outline-none">
+            <input name="niche" placeholder="Niche (e.g. Pets, Beauty)" class="rounded-lg px-4 py-3 bg-slate-100 outline-none">
+            <textarea rows="4" name="message" placeholder="What are you trying to sell?" class="rounded-lg px-4 py-3 bg-slate-100 outline-none"></textarea>
+            <button class="btn btn-grad justify-center">Send Message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-10">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 card p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm opacity-80">© <span id="year"></span> PrismCart — All rights reserved.</p>
+      <div class="flex items-center gap-3 text-sm opacity-90">
+        <a href="#products">Products</a><a href="#benefits">Why Us</a><a href="#contact">Contact</a>
+        <button class="rounded-lg px-3 py-2 btn-ghost" id="open-settings-2">⚙︎ Settings</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SETTINGS -->
+  <div id="settings-backdrop" class="hidden fixed inset-0 bg-black/30 z-[100]"></div>
+  <aside id="settings" class="hidden fixed right-0 top-0 bottom-0 z-[101] w-[360px] max-w-full bg-white text-slate-900 p-6 overflow-y-auto shadow-2xl border-l border-slate-200">
+    <div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold">Site Settings</h3><button id="close-settings" class="px-3 py-1 rounded-lg bg-slate-100">✕</button></div>
+    <div class="space-y-6 text-sm">
+      <div><label class="block mb-2 font-medium">Primary Gradient Start</label><input type="color" id="color1" value="#6366f1" class="w-full h-10 rounded-lg border border-slate-300 p-1" /></div>
+      <div><label class="block mb-2 font-medium">Primary Gradient End</label><input type="color" id="color2" value="#06b6d4" class="w-full h-10 rounded-lg border border-slate-300 p-1" /></div>
+      <div><label class="block mb-2 font-medium">Parallax Intensity</label><input type="range" min="0" max="1.8" step="0.05" id="intensity" value="1.15" class="w-full"><div class="mt-1 opacity-70"><span id="intensityVal">1.15</span></div></div>
+      <div><label class="block mb-2 font-medium">Snappiness (lerp)</label><input type="range" min="0.06" max="0.6" step="0.01" id="lerp" value="0.24" class="w-full"><div class="mt-1 opacity-70"><span id="lerpVal">0.24</span></div></div>
+      <div><label class="block mb-2 font-medium">Spark Particles</label><input type="range" min="30" max="500" step="10" id="particles" value="220" class="w-full"></div>
+      <div class="pt-2 flex items-center gap-3"><button id="reset" class="rounded-lg px-4 py-2 bg-slate-100">Reset</button><button id="save" class="rounded-lg px-4 py-2 btn-grad text-white">Save</button></div>
+      <p class="text-xs opacity-70 mt-2">Settings save to localStorage.</p>
+    </div>
+  </aside>
+
+  <script>
+    // Header reveal (fast, unobtrusive)
+    (function headerReveal(){
+      const header=document.querySelector('header'); const zone=document.getElementById('top-hover-zone');
+      let t; let lastY=window.scrollY;
+      function show(){ header.dataset.hidden='false'; clearTimeout(t); t=setTimeout(()=> header.dataset.hidden='true', 900); }
+      function hide(){ header.dataset.hidden='true'; }
+      zone.addEventListener('mousemove',show); zone.addEventListener('mouseenter',show);
+      document.addEventListener('scroll',()=>{ const y=window.scrollY; if(y<10){hide();return;} if(y<lastY) show(); else hide(); lastY=y;});
+      hide();
+    })();
+
+    // Product data (12 items with new image set)
+    const products=[
+      {name:'LumeStrip LED', price:'£24.99', tag:'Home', img:'https://images.unsplash.com/photo-1606312618560-3b4d4d2c7d1e?q=80&w=1200&auto=format&fit=crop'},
+      {name:'AirClean Mini', price:'£39.99', tag:'Home', img:'https://images.unsplash.com/photo-1518442781971-0bf77a6d7a4e?q=80&w=1200&auto=format&fit=crop'},
+      {name:'FlexBottle Go', price:'£14.99', tag:'Fitness', img:'https://images.unsplash.com/photo-1526401485004-2fda9f4d2f6d?q=80&w=1200&auto=format&fit=crop'},
+      {name:'Glow Roller', price:'£19.99', tag:'Beauty', img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop'},
+      {name:'CleanBrush', price:'£12.99', tag:'Home', img:'https://images.unsplash.com/photo-1515165562835-c3b8e3bde1b7?q=80&w=1200&auto=format&fit=crop'},
+      {name:'Travel Mate', price:'£17.99', tag:'Travel', img:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop'},
+      {name:'MagDock 2', price:'£27.99', tag:'Gadgets', img:'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop'},
+      {name:'Zen Diffuser', price:'£22.99', tag:'Home', img:'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?q=80&w=1200&auto=format&fit=crop'},
+      {name:'GripPad XL', price:'£12.99', tag:'Gadgets', img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1200&auto=format&fit=crop'},
+      {name:'CoreWrap', price:'£34.99', tag:'Fitness', img:'https://images.unsplash.com/photo-1517834205346-5d79f212d9e0?q=80&w=1200&auto=format&fit=crop'},
+      {name:'Hydra Filter', price:'£26.99', tag:'Home', img:'https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?q=80&w=1200&auto=format&fit=crop'},
+      {name:'PawTracker', price:'£31.99', tag:'Pets', img:'https://images.unsplash.com/photo-1543852786-1cf6624b9987?q=80&w=1200&auto=format&fit=crop'}
+    ];
+    const grid=document.getElementById('grid');
+    grid.innerHTML=products.map(p=>`
+      <article class="card overflow-hidden">
+        <img src="${p.img}" alt="${p.name}" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <div class="flex items-center justify-between"><h4 class="font-semibold">${p.name}</h4><span class="font-extrabold">${p.price}</span></div>
+          <div class="mt-2 text-sm text-slate-600">${p.tag}</div>
+          <div class="mt-4 flex items-center gap-3">
+            <button class="btn btn-grad flex-1 justify-center">Add to Cart</button>
+            <button class="btn btn-ghost">❤</button>
+          </div>
+        </div>
+      </article>
+    `).join('');
+
+    // SETTINGS + Parallax (mesh + sparks)
+    const LS_KEY='prismcart-settings';
+    function load(){ try{ return JSON.parse(localStorage.getItem(LS_KEY))||{} }catch(e){ return {} } }
+    function save(s){ localStorage.setItem(LS_KEY, JSON.stringify(s)); }
+    (function(){
+      const root=document.getElementById('scene'); const layers=root.querySelectorAll('.layer'); const mesh=document.getElementById('mesh'); const sparks=document.getElementById('sparks');
+      const ctxM=mesh.getContext('2d'), ctxS=sparks.getContext('2d', {alpha:true});
+      const state={ w:0,h:0,dpr:Math.min(2,window.devicePixelRatio||1), mx:0,my:0, tx:0,ty:0, intensity:1.15, lerp:.24, particles:220, c1:'#6366f1', c2:'#06b6d4' };
+
+      // Settings UI
+      const backdrop=document.getElementById('settings-backdrop'), panel=document.getElementById('settings'), openBtns=[document.getElementById('open-settings'), document.getElementById('open-settings-2')], closeBtn=document.getElementById('close-settings');
+      const color1=document.getElementById('color1'), color2=document.getElementById('color2'), intensity=document.getElementById('intensity'), lerp=document.getElementById('lerp'), lerpVal=document.getElementById('lerpVal'), intensityVal=document.getElementById('intensityVal'), particles=document.getElementById('particles'), reset=document.getElementById('reset'), saveBtn=document.getElementById('save');
+      function open(){ backdrop.classList.remove('hidden'); panel.classList.remove('hidden'); } function close(){ backdrop.classList.add('hidden'); panel.classList.add('hidden'); }
+      openBtns.forEach(b=> b && b.addEventListener('click', open)); closeBtn.addEventListener('click', close); backdrop.addEventListener('click', close);
+
+      const saved=load();
+      if(saved.c1){ state.c1=saved.c1; color1.value=state.c1; }
+      if(saved.c2){ state.c2=saved.c2; color2.value=state.c2; }
+      if(saved.intensity){ state.intensity=saved.intensity; intensity.value=saved.intensity; intensityVal.textContent=Number(saved.intensity).toFixed(2); }
+      if(saved.lerp){ state.lerp=saved.lerp; lerp.value=saved.lerp; lerpVal.textContent=Number(saved.lerp).toFixed(2); }
+      if(saved.particles){ state.particles=saved.particles; particles.value=saved.particles; }
+
+      color1.addEventListener('input', e=>{ state.c1=e.target.value; });
+      color2.addEventListener('input', e=>{ state.c2=e.target.value; });
+      intensity.addEventListener('input', e=>{ state.intensity=parseFloat(e.target.value); intensityVal.textContent=Number(state.intensity).toFixed(2); });
+      lerp.addEventListener('input', e=>{ state.lerp=parseFloat(e.target.value); lerpVal.textContent=Number(state.lerp).toFixed(2); });
+      particles.addEventListener('input', e=>{ state.particles=parseInt(e.target.value,10); initSparks(); });
+      reset.addEventListener('click', ()=>{ state.c1='#6366f1'; color1.value=state.c1; state.c2='#06b6d4'; color2.value=state.c2; state.intensity=1.15; intensity.value=1.15; intensityVal.textContent='1.15'; state.lerp=.24; lerp.value=.24; lerpVal.textContent='.24'; state.particles=220; particles.value=220; initSparks(); });
+      saveBtn.addEventListener('click', ()=>{ save({ c1:state.c1, c2:state.c2, intensity:state.intensity, lerp:state.lerp, particles:state.particles }); close(); });
+
+      function resize(){ state.w=root.clientWidth; state.h=root.clientHeight; [mesh,sparks].forEach(c=>{ c.width=state.w*state.dpr; c.height=state.h*state.dpr; c.style.width=state.w+'px'; c.style.height=state.h+'px'; }); ctxM.setTransform(state.dpr,0,0,state.dpr,0,0); ctxS.setTransform(state.dpr,0,0,state.dpr,0,0); }
+      window.addEventListener('resize', resize);
+
+      // Mesh draw: multi-radial gradient blobs that move with mouse
+      function drawMesh(t){
+        ctxM.clearRect(0,0,state.w,state.h);
+        const blobs=[
+          {x: state.w*0.25 + state.tx*40, y: state.h*0.35 + state.ty*20, r: 360, c: state.c1},
+          {x: state.w*0.75 + state.tx*-40, y: state.h*0.65 + state.ty*-20, r: 420, c: state.c2},
+          {x: state.w*0.55 + Math.sin(t*0.4)*40, y: state.h*0.25 + Math.cos(t*0.3)*30, r: 280, c: '#22d3ee'}
+        ];
+        blobs.forEach(b=>{
+          const g=ctxM.createRadialGradient(b.x,b.y,0, b.x,b.y,b.r);
+          g.addColorStop(0, b.c+'DD'); g.addColorStop(1, b.c+'00');
+          ctxM.fillStyle=g; ctxM.beginPath(); ctxM.arc(b.x,b.y,b.r,0,Math.PI*2); ctxM.fill();
+        });
+      }
+
+      // Sparks
+      let sparkArr=[]; function initSparks(){ resize(); sparkArr=Array.from({length: state.particles},()=>({ x:Math.random()*state.w, y:Math.random()*state.h, vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3, r:Math.random()*1.2+.2, c: Math.random()<.5 ? state.c1 : state.c2 })); }
+      window.addEventListener('pointermove',(e)=>{ state.mx=(e.clientX/window.innerWidth-0.5)*2; state.my=(e.clientY/window.innerHeight-0.5)*2; }, {passive:true});
+
+      function animate(){
+        state.tx += (state.mx - state.tx) * state.lerp; state.ty += (state.my - state.ty) * state.lerp;
+        const baseX= state.tx*70*state.intensity; const baseY= state.ty*34*state.intensity;
+        layers.forEach(l=>{ const d=parseFloat(l.dataset.depth||0.1); l.style.transform=`translate3d(${baseX*d}px, ${baseY*d}px, ${d*340*state.intensity}px)`; });
+
+        // mesh & sparks
+        drawMesh(performance.now()*0.001);
+        ctxS.clearRect(0,0,state.w,state.h);
+        for(const s of sparkArr){ s.x+=s.vx; s.y+=s.vy; if(s.x<-5)s.x=state.w+5; if(s.x>state.w+5)s.x=-5; if(s.y<-5)s.y=state.h+5; if(s.y>state.h+5)s.y=-5;
+          const px=s.x+state.tx*18; const py=s.y+state.ty*12; ctxS.beginPath(); ctxS.fillStyle=s.c; ctxS.arc(px,py,s.r,0,Math.PI*2); ctxS.fill(); }
+        requestAnimationFrame(animate);
+      }
+
+      document.getElementById('year').textContent=new Date().getFullYear();
+      resize(); initSparks(); animate();
+    })();
+  </script>
+</body>
+</html>
